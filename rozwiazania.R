@@ -16,6 +16,7 @@ podzielnosc<-function(){
   }
 }
 
+
 #2. Pociąg z Lublina do Warszawy przejechał połowę drogi ze średnią prędkością 120 km/h.
 #Drugą połowę przejechał ze średnią prędkością 90 km/h.
 #Jaka była średnia prędkość pociągu?
@@ -28,9 +29,11 @@ v2 <- 90
 v_sr = 2*v1*v2 / (v1+v2)
 print(paste("Srednia predkosc pociagu z Lublina do Warszawy wynosila",v_sr,sep = " "))
 
+
 #3. Utwórz funkcję obliczającą współczynnik korelacji r Pearsona dla 2 wektorów o tej samej długości.
 #Wczytaj dane plik dane.csv i oblicz współczynnik dla wagi i wzrostu. W komentarzu napisz co oznacza wynik.
 
+#wektory podawane przez uzytkownika
 wsp_R_Pearsona<-function(){
   pyt <- "Podaj pierwszy wektor (liczby oddzielone przecinkiem):"
   vec1 <- as.numeric( strsplit( readline(pyt),",")[[1]] )
@@ -67,6 +70,7 @@ wsp_R_Pearsona<-function(){
   }
 }
 
+#wektory zaczytane z pliku
 wsp_R_Pearsona<-function(vec1,vec2){
   v1_sr <- mean(vec1)
   v2_sr <- mean(vec2)
@@ -99,3 +103,33 @@ wsp_R_Pearsona<-function(vec1,vec2){
   }
 }
 wsp_R_Pearsona(data$wzrost,data$waga)
+
+
+#4. Napisz funkcję zwracającą ramke danych z danych podanych przez użytkownika 
+#stworzDataFrame <- function(ile=1)
+#W pierwszym wierszu użytkownik podaje nazwy kolumn.
+#W kolejnych wierszach zawartość wierszy ramki danych ( tyle wierszy ile podaliśmy w argumencie ile.
+#ile=1 oznacza, że gdy użytkownik nie poda żadnej wartości jako parametr, domyślna wartością będzie 1).
+
+stworzDataFrame <- function(ile=1){
+  print("Podaj nazwy kolumn oddzielone spacja:")
+  columns <- readline(prompt = "kolumny: ")
+  nazwy_kolumn <- strsplit(columns, " ")
+  komunikat <- "Podaj liczbe wierszy: "
+  ile <- as.integer(readline(komunikat))
+  
+  df <- data.frame(matrix(NA, nrow = ile, ncol=lengths(nazwy_kolumn)))
+  names(df) <- t(unlist(nazwy_kolumn))
+  
+  for(i in 1:ile){
+    komunikat <- paste("Podaj wartosci dla ",i,"-ego wiersza oddzielone spacja: ")
+    wartosci <- as.character(strsplit(readline(komunikat), " ")[[1]])
+    j = 1
+    for(column in colnames(df)){
+      df[i, column] <- wartosci[j]
+      j = j+1
+    }
+  }
+  print(df)
+}
+stworzDataFrame()

@@ -112,24 +112,71 @@ wsp_R_Pearsona(data$wzrost,data$waga)
 #ile=1 oznacza, że gdy użytkownik nie poda żadnej wartości jako parametr, domyślna wartością będzie 1).
 
 stworzDataFrame <- function(ile=1){
-  print("Podaj nazwy kolumn oddzielone spacja:")
-  columns <- readline(prompt = "kolumny: ")
-  nazwy_kolumn <- strsplit(columns, " ")
-  komunikat <- "Podaj liczbe wierszy: "
-  ile <- as.integer(readline(komunikat))
+  if (ile>0){
+    if(!is.integer(ile)){
+      print("Wprowadzona iczba wierszy zostanie zaokraglona w dol do liczby calkowitej")
+    }else{}
+    
+    print("Podaj nazwy kolumn oddzielone spacja:")
+    columns <- readline(prompt = "kolumny: ")
+    nazwy_kolumn <- strsplit(columns, " ")
+    
+    df <- data.frame(matrix(NA, nrow = ile, ncol=lengths(nazwy_kolumn)))
+    #names(df) <- t(unlist(nazwy_kolumn))
+    names(df) <- nazwy_kolumn[[1]]
+    
+    for(i in 1:ile){
+      komunikat <- paste("Podaj wartosci dla ",i,"-ego wiersza oddzielone spacja: ")
+      wartosci <- as.character(strsplit(readline(komunikat), " ")[[1]])
+      j = 1
+      for(column in colnames(df)){
+        df[i, column] <- wartosci[j]
+        j = j+1
+      }
+    }
+    print(df)
+    View(df)
+  }else{print("Liczba wierszy powinna byc >0")}
   
-  df <- data.frame(matrix(NA, nrow = ile, ncol=lengths(nazwy_kolumn)))
-  names(df) <- t(unlist(nazwy_kolumn))
+}
+stworzDataFrame(3)
+
+
+#5 Napisz funkcję, która pobiera sciezke Katalogu, nazweKolumny, jakaFunkcje, DlaIluPlikow i liczy: 
+#mean, median, min, max w zależności od podanej nazwy funkcji w argumencie, z katologu który podaliśmy i z tylu plików ilu podaliśmy dla wybranej nazwy kolumny. 
+#UWAGA: w podanych plikach R pobierając komórki nazwane liczbami R wstawi przed nazwy X. Funkcję przetestuj dla katalogu smogKrakow.zip. Wykonując obliczenia pomiń brakujące wartości.
+#liczZplikow <- function(sciezka,nazwaKolumny,jakaFunkcja="mean",DlaIluPlikow=1){ ...}
+#Lista plików w katalogu: list.files(sciezka)
+#Omijanie na : na.omit(myDataFrame[[nazwaKolumny]])
+#Do złączania stringów: paste("string1","string2",sep="TU WSTAW SEPARATOR")
+#Gdy mamy rózne oznaczenia NA w plikach możemy wykorzystać (w tym wypadku pusty znak i NA: na.strings=c("","NA")
+
+liczZplikow<-function(sciezka="C:/Users/Wiola/Desktop/Disk_D/Wiola/PJATK/BigData_2020/semestr2/ADNR/cwiczenia/zajecia1/Praca_domowa/ADNR_zajecia1/smogKrakow",
+                 nazwaKolumny="3_pressure",
+                 jakaFunkcja="mean",
+                 dlaIluPlikow=1){
+  #sciezka <- readline("Podaj sciezke do katalogu: ")
   
-  for(i in 1:ile){
-    komunikat <- paste("Podaj wartosci dla ",i,"-ego wiersza oddzielone spacja: ")
-    wartosci <- as.character(strsplit(readline(komunikat), " ")[[1]])
-    j = 1
-    for(column in colnames(df)){
-      df[i, column] <- wartosci[j]
-      j = j+1
+  nazwaKolumny <- paste("X",nazwaKolumny,sep="")
+  lista_plikow <- list.files(sciezka)
+  i <- 1
+  for(plik in lista_plikow){
+    if(i <= min(dlaIluPlikow,length(lista_plikow))){
+      #print(paste(sciezka,plik,sep="/"))
+      dane <- read.csv(file = paste(sciezka,plik,sep="/"),dec=",")
+      #print(dim(dane))
+      #print(class(dane))
+      dane <- na.omit(dane[[nazwaKolumny]],na.strings=c("","NA"))
+      #print(class(dane))
+      #print(dim(dane))
+      #print(dane)
+      attributes(dane)$na.action <- NULL
+      wynik<-switch(jakaFunkcja,
+                    mean = mean(dane),median = median(dane),min = min(dane),max = max(dane)
+      )
+      print(paste("W pliku",plik,"wartosc funkcji",jakaFunkcja,"na kolumnie",nazwaKolumny,"wynosi",wynik))
+      i <- i+1
     }
   }
-  print(df)
 }
-stworzDataFrame()
+liczZplikow(nazwaKolumny="196_pressure",jakaFunkcja="median",dlaIluPlikow=12)
